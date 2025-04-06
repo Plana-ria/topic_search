@@ -1,8 +1,12 @@
-data/
-models/
-tmp/
+
+
+**/data/*
+**/models/*
+**/tmp/*
 nohup.out
 
 data2/
 sample/
 test_*
+
+!**/.gitkeep
