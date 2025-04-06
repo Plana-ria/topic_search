@@ -1,0 +1,11 @@
+gradio
+pandas
+numpy
+torch
+transformers
+sentencepiece
+protobuf
+sentence-transformers
+rank_bm25
+janome
+# CMAKE_ARGS="-DGGML_METAL=on" pip install llama-cpp-python

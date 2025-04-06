@@ -1,0 +1,8 @@
+data/
+models/
+tmp/
+nohup.out
+
+data2/
+sample/
+test_*
