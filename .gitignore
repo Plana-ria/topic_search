@@ -1,8 +1,15 @@
 
 
-**/data/*
-**/models/*
-**/tmp/*
+data/*
+!data/txt/
+data/txt/*
+data/srt/*
+!data/srt/
+data/srt/*
+!data/tmp/
+data/tmp/*
+
+models/*
 nohup.out
 
 data2/
