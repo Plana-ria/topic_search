@@ -1,4 +1,4 @@
-name: ai_search
+name: topic_search
 channels:
   - conda-forge
 dependencies:
@@ -90,4 +90,4 @@ dependencies:
     - urllib3==2.3.0
     - uvicorn==0.34.0
     - websockets==15.0.1
-prefix: /Users/kouju/miniforge3/envs/ai_search
+prefix: ~/miniforge3/envs/topic_search
