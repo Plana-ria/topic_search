@@ -261,7 +261,7 @@ with gr.Blocks() as demo:
         with gr.Tab("検索（オリジナルの分割）"):
             query = gr.Textbox(label="検索クエリ")
             with gr.Accordion("検索のオプション", open=False):
-                use_bm25 = gr.Checkbox(label="BM25検索を使用", value=True)
+                use_bm25 = gr.Checkbox(label="キーワード検索を使用", value=True)
                 use_vector = gr.Checkbox(label="意味検索を使用", value=True)
                 with gr.Group():
                     weight_slider = gr.Slider(0, 1, value=0.5, label="重みの割合", step=0.01)
@@ -284,7 +284,7 @@ with gr.Blocks() as demo:
         with gr.Tab("検索（AIの分割）"):
             query = gr.Textbox(label="検索クエリ")
             with gr.Accordion("検索のオプション", open=False):
-                use_bm25 = gr.Checkbox(label="BM25検索を使用", value=True)
+                use_bm25 = gr.Checkbox(label="キーワード検索を使用", value=True)
                 use_vector = gr.Checkbox(label="意味検索を使用", value=True)
                 with gr.Group():
                     weight_slider = gr.Slider(0, 1, value=0.5, label="重みの割合", step=0.01)
