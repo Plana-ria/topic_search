@@ -11,6 +11,7 @@ from sentence_transformers import SentenceTransformer
 from rank_bm25 import BM25Okapi
 from janome.tokenizer import Tokenizer
 from sklearn.preprocessing import MinMaxScaler
+from transcribe import transcribe_file
 
 # モデルのロード
 model = SentenceTransformer("sbintuitions/sarashina-embedding-v1-1b")
@@ -253,6 +254,116 @@ reprocess_data()
 
 
 
+# 出力ファイルの自動生成（入力ファイルが選ばれた時）
+def set_output_path(input_path):
+    if not input_path:
+        return ""
+    base, _ = os.path.splitext(input_path)
+    return base + ".srt"
+
+languages =[
+    "auto",
+    "javanese",
+    "english",
+    "chinese",
+    "german",
+    "spanish",
+    "russian",
+    "korean",
+    "french",
+    "japanese",
+    "portuguese",
+    "turkish",
+    "polish",
+    "catalan",
+    "dutch",
+    "arabic",
+    "swedish",
+    "italian",
+    "indonesian",
+    "hindi",
+    "finnish",
+    "vietnamese",
+    "hebrew",
+    "ukrainian",
+    "greek",
+    "malay",
+    "czech",
+    "romanian",
+    "danish",
+    "hungarian",
+    "tamil",
+    "norwegian",
+    "thai",
+    "urdu",
+    "croatian",
+    "bulgarian",
+    "lithuanian",
+    "latin",
+    "maori",
+    "malayalam",
+    "welsh",
+    "slovak",
+    "telugu",
+    "persian",
+    "latvian",
+    "bengali",
+    "serbian",
+    "azerbaijani",
+    "slovenian",
+    "kannada",
+    "estonian",
+    "macedonian",
+    "breton",
+    "basque",
+    "icelandic",
+    "armenian",
+    "nepali",
+    "mongolian",
+    "bosnian",
+    "kazakh",
+    "albanian",
+    "swahili",
+    "galician",
+    "marathi",
+    "punjabi",
+    "sinhala",
+    "khmer",
+    "shona",
+    "yoruba",
+    "somali",
+    "afrikaans",
+    "occitan",
+    "georgian",
+    "belarusian",
+    "tajik",
+    "sindhi",
+    "gujarati",
+    "amharic",
+    "yiddish",
+    "lao",
+    "uzbek",
+    "faroese",
+    "haitian creole",
+    "pashto",
+    "turkmen",
+    "nynorsk",
+    "maltese",
+    "sanskrit",
+    "luxembourgish",
+    "myanmar",
+    "tibetan",
+    "tagalog",
+    "malagasy",
+    "assamese",
+    "tatar",
+    "hawaiian",
+    "lingala",
+    "hausa",
+    "bashkir",
+    "sundanese",
+    "cantonese"
+]
 
 
 with gr.Blocks() as demo:
@@ -281,7 +392,7 @@ with gr.Blocks() as demo:
             )
             search_button.click(search, [query, use_bm25, use_vector, bm25_weight, vector_weight, gr.State(processed_srt_chunk_data), gr.State(bm25_srt)], result_table)
 
-        with gr.Tab("検索（AIの分割）"):
+        with gr.Tab("検索（話題による分割）"):
             query = gr.Textbox(label="検索クエリ")
             with gr.Accordion("検索のオプション", open=False):
                 use_bm25 = gr.Checkbox(label="キーワード検索を使用", value=True)
@@ -304,14 +415,36 @@ with gr.Blocks() as demo:
 
             search_button.click(search, [query, use_bm25, use_vector, bm25_weight, vector_weight, gr.State(processed_gpt_chunk_data), gr.State(bm25_gpt)], result_table)
 
-        """
-        with gr.Tab("GPTリサーチ"):
-            gpt_query = gr.Textbox(label="調査クエリ")
-            gpt_button = gr.Button("リサーチ")
-            gpt_output = gr.Textbox(label="リサーチ結果")
-            gpt_button.click(gpt_research, gpt_query, gpt_output)
-        """
+        with gr.Tab("AI文字起こし"):
+            input_file = gr.File(label="音声ファイルをドロップまたは選択", type="filepath")
+            output_file_path = gr.Textbox(label="出力するSRTファイルのパス")
+            num_speakers = gr.Slider(0, 10, value=0, step=1, label="最大話者数",
+                                     info="0に設定すると自動的に話者数を推定します。実際の話者数より少ない場合は、話者推定がうまく実行されない場合があります。"
+                                     )
+            language = gr.Dropdown(choices=languages, value="japanese", label="言語")
+            model_id = gr.Dropdown(choices=[
+                "openai/whisper-large-v3",
+                "openai/whisper-large-v3-turbo", 
+                "openai/whisper-medium",
+                "openai/whisper-small",
+                "openai/whisper-base",
+                "openai/whisper-tiny",
+            ], value="openai/whisper-large-v3-turbo", label="モデル")
+            batch_size = gr.Slider(1, 32, value=2, step=1, label="バッチサイズ")
 
+            transcribe_button = gr.Button("文字起こしを実行")
+            result_file = gr.File(label="出力されたSRTファイル")
+            status_text = gr.Textbox(label="ステータス", interactive=False)
+
+            # 入力ファイル変更時に出力パスを自動生成
+            input_file.change(fn=set_output_path, inputs=input_file, outputs=output_file_path)
+
+            # 実行ボタンで文字起こし
+            transcribe_button.click(
+                fn=transcribe_file,
+                inputs=[input_file, output_file_path, num_speakers, language, batch_size, model_id],
+                outputs=[result_file, status_text]
+            )
 
 
 

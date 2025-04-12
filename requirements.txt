@@ -8,4 +8,6 @@ protobuf
 sentence-transformers
 rank_bm25
 janome
+python-dotenv
+pyannote.audio
 # CMAKE_ARGS="-DGGML_METAL=on" pip install llama-cpp-python
